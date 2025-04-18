@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Selector</title>
+    <style>
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding-top: 50px; }
+        .buttons button { margin: 0 10px; padding: 10px 20px; cursor: pointer; }
+        #movie-image { margin-top: 30px; max-width: 80%; height: auto; border: 1px solid #ccc; }
+    </style>
+</head>
+<body>
+
+    <h1>Choose a Movie Genre</h1>
+
+    <div class="buttons">
+        <button id="action-btn">Action Film</button>
+        <button id="romance-btn">Romance Film</button>
+    </div>
+
+    <div>
+        <img id="movie-image" src="https://via.placeholder.com/300x200.png?text=Select+Genre" alt="Selected Movie Poster">
+    </div>
+
+    <script>
+        const actionButton = document.getElementById('action-btn');
+        const romanceButton = document.getElementById('romance-btn');
+        const movieImage = document.getElementById('movie-image');
+
+        async function fetchAndUpdateImage(genre) {
+            try {
+                // Fetch the image URL from the FastAPI backend
+                const response = await fetch(`/get_image/${genre}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+
+                // Update the image source
+                if (data.imageUrl) {
+                    movieImage.src = data.imageUrl;
+                    movieImage.alt = `${genre.charAt(0).toUpperCase() + genre.slice(1)} Movie Poster`;
+                } else {
+                    // Handle case where imageUrl might be missing in response
+                    movieImage.src = 'https://via.placeholder.com/300x200.png?text=Error';
+                    movieImage.alt = 'Error loading image';
+                }
+            } catch (error) {
+                console.error('Error fetching image:', error);
+                movieImage.src = 'https://via.placeholder.com/300x200.png?text=Error';
+                movieImage.alt = 'Error loading image';
+            }
+        }
+
+        actionButton.addEventListener('click', () => {
+            fetchAndUpdateImage('action');
+        });
+
+        romanceButton.addEventListener('click', () => {
+            fetchAndUpdateImage('romance');
+        });
+    </script>
+
+</body>
+</html>
+
+
+MONGODB
+POSTGRESQL
+AWS S3
